@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>UPX GUI</title>
+        <!-- Tailwind CSS -->
+        <link rel="stylesheet" href="css/tailwind.css" />
+        <link rel="stylesheet" href="css/style.css" />
+        <!-- 预加载关键资源 -->
+        <link rel="preload" href="js/main.js" as="script" />
+    </head>
+    <body class="h-screen overflow-hidden bg-background" oncontextmenu="return false">
+        <!-- 标题栏 -->
+        <div
+            id="titlebar"
+            class="h-10 bg-card border-b border-border flex items-center justify-between px-3"
+        >
+            <div data-tauri-drag-region class="flex items-center gap-3 flex-1 h-full">
+                <div class="w-2 h-2 rounded-full bg-green-500 breathing-light"></div>
+                <span
+                    id="app-title"
+                    class="text-foreground text-xs font-medium select-none cursor-default"
+                    title="UPX 加壳脱壳工具"
+                >
+                    UPX-加壳脱壳
+                </span>
+                <span id="upx-version" class="text-muted-foreground text-xs select-none"></span>
+            </div>
+            <div class="flex items-center gap-0.5">
+                <button id="check-update-btn" class="btn btn-ghost w-9 h-9 p-0" title="检查更新">
+                    <svg
+                        class="w-4 h-4 text-muted-foreground"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                        />
+                    </svg>
+                </button>
+                <button
+                    id="refresh-icon-btn"
+                    class="btn btn-ghost w-9 h-9 p-0"
+                    title="刷新图标缓存"
+                >
+                    <svg
+                        class="w-4 h-4 text-muted-foreground"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        />
+                    </svg>
+                </button>
+                <button id="settings-btn" class="btn btn-ghost w-9 h-9 p-0" title="设置">
+                    <svg
+                        class="w-4 h-4 text-muted-foreground"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                        />
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                    </svg>
+                </button>
+                <button id="titlebar-minimize" class="btn btn-ghost w-9 h-9 p-0">
+                    <svg
+                        class="w-4 h-4 text-muted-foreground"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M20 12H4"
+                        ></path>
+                    </svg>
+                </button>
+                <button id="titlebar-maximize" class="btn btn-ghost w-9 h-9 p-0">
+                    <svg
+                        class="w-4 h-4 text-muted-foreground"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                        ></path>
+                    </svg>
+                </button>
+                <button
+                    id="titlebar-close"
+                    class="btn btn-ghost w-9 h-9 p-0 hover:bg-destructive/10 group"
+                >
+                    <svg
+                        class="w-4 h-4 text-muted-foreground group-hover:text-destructive"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="h-[calc(100vh-2.5rem)] flex flex-col p-3 gap-3">
+            <!-- 操作选择 -->
+            <div class="grid grid-cols-2 gap-3">
+                <button
+                    id="compress-btn"
+                    class="drop-zone group relative py-6 px-5 bg-secondary/50 border border-border rounded-lg hover:border-primary hover:bg-accent transition-all cursor-pointer outline-none focus:outline-none"
+                >
+                    <svg
+                        class="w-10 h-10 mx-auto mb-3 text-muted-foreground group-hover:text-primary transition-colors drop-icon"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.5"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                    </svg>
+                    <div
+                        class="text-sm font-semibold text-foreground mb-1 group-hover:text-primary transition-colors"
+                    >
+                        加壳压缩
+                    </div>
+                    <div class="text-xs text-muted-foreground">点击选择或拖放文件/文件夹到此处</div>
+                </button>
+                <button
+                    id="decompress-btn"
+                    class="drop-zone group relative py-6 px-5 bg-secondary/50 border border-border rounded-lg hover:border-primary hover:bg-accent transition-all cursor-pointer outline-none focus:outline-none"
+                >
+                    <svg
+                        class="w-10 h-10 mx-auto mb-3 text-muted-foreground group-hover:text-primary transition-colors drop-icon"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.5"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                        />
+                    </svg>
+                    <div
+                        class="text-sm font-semibold text-foreground mb-1 group-hover:text-primary transition-colors"
+                    >
+                        脱壳解压
+                    </div>
+                    <div class="text-xs text-muted-foreground">点击选择或拖放文件/文件夹到此处</div>
+                </button>
+            </div>
+
+            <!-- 日志输出 -->
+            <div class="flex-1 flex flex-col min-h-0">
+                <div class="card p-3 mb-3">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-sm font-medium text-foreground">执行日志：</h2>
+                        <button
+                            id="clear-log-btn"
+                            class="btn btn-ghost w-8 h-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            title="清空日志"
+                        >
+                            <svg
+                                class="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="relative flex-1 bg-muted text-muted-foreground font-mono text-sm rounded-md overflow-hidden">
+                    <div
+                        id="log-output"
+                        class="h-full p-3 overflow-y-auto overflow-x-auto select-text"
+                    >
+                        <div class="text-muted-foreground/50">等待操作...</div>
+                    </div>
+                    <!-- 复制日志按钮 -->
+                    <button
+                        id="copy-log-btn"
+                        class="absolute top-2 right-2 btn btn-ghost w-8 h-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all opacity-0 pointer-events-none"
+                        title="复制日志"
+                    >
+                        <svg
+                            class="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                            />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 全局设置弹窗 -->
+        <div
+            id="settings-modal"
+            class="hidden fixed inset-0 bg-foreground/80 flex items-center justify-center z-50 backdrop-blur-sm modal-backdrop"
+        >
+            <div class="card p-6 w-full mx-4 modal-content" style="max-width: 640px">
+                <h2 class="text-lg font-semibold text-foreground mb-5">全局设置</h2>
+
+                <div class="space-y-4">
+                    <!-- 压缩级别 -->
+                    <div class="bg-muted px-3 py-2.5 rounded-md">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-xs font-medium text-foreground">压缩级别</label>
+                            <span id="level-display" class="text-xs font-semibold text-primary">
+                                级别 9
+                            </span>
+                        </div>
+
+                        <div class="relative">
+                            <input
+                                type="range"
+                                id="compression-level"
+                                min="1"
+                                max="10"
+                                value="9"
+                                class="w-full appearance-none cursor-pointer slider"
+                            />
+                        </div>
+
+                        <p
+                            id="level-description"
+                            class="text-[10px] text-muted-foreground text-center mt-2"
+                        >
+                            推荐级别，平衡速度和压缩率
+                        </p>
+                    </div>
+
+                    <!-- 选项列表 - 紧凑 Switch 布局 -->
+                    <div class="space-y-1">
+                        <label class="switch-row">
+                            <span class="switch-label">
+                                <span class="text-sm text-foreground">覆盖原文件</span>
+                                <span class="tooltip">
+                                    <span class="tooltip-trigger">?</span>
+                                    <span class="tooltip-content">
+                                        直接替换原文件，不创建新文件
+                                    </span>
+                                </span>
+                            </span>
+                            <div class="switch">
+                                <input type="checkbox" id="overwrite" checked />
+                                <span class="switch-slider"></span>
+                            </div>
+                        </label>
+
+                        <label class="switch-row">
+                            <span class="switch-label">
+                                <span class="text-sm text-foreground">备份原文件</span>
+                                <span class="tooltip">
+                                    <span class="tooltip-trigger">?</span>
+                                    <span class="tooltip-content">保留 .bak 备份文件</span>
+                                </span>
+                            </span>
+                            <div class="switch">
+                                <input type="checkbox" id="backup" />
+                                <span class="switch-slider"></span>
+                            </div>
+                        </label>
+
+                        <label class="switch-row">
+                            <span class="switch-label">
+                                <span class="text-sm text-foreground">极限压缩</span>
+                                <span class="tooltip">
+                                    <span class="tooltip-trigger">?</span>
+                                    <span class="tooltip-content tooltip-wrap">
+                                        尝试所有压缩方法，速度慢但压缩率最高
+                                    </span>
+                                </span>
+                            </span>
+                            <div class="switch">
+                                <input type="checkbox" id="ultra-brute" />
+                                <span class="switch-slider"></span>
+                            </div>
+                        </label>
+
+                        <label class="switch-row">
+                            <span class="switch-label">
+                                <span class="text-sm text-foreground">包含子文件夹</span>
+                                <span class="tooltip">
+                                    <span class="tooltip-trigger">?</span>
+                                    <span class="tooltip-content tooltip-wrap">
+                                        处理文件夹时，递归处理所有子目录
+                                    </span>
+                                </span>
+                            </span>
+                            <div class="switch">
+                                <input type="checkbox" id="include-subfolders" />
+                                <span class="switch-slider"></span>
+                            </div>
+                        </label>
+
+                        <label class="switch-row">
+                            <span class="switch-label">
+                                <span class="text-sm text-foreground">强制压缩</span>
+                                <span class="tooltip">
+                                    <span class="tooltip-trigger">?</span>
+                                    <span class="tooltip-content">强制处理受保护的文件</span>
+                                </span>
+                            </span>
+                            <div class="switch">
+                                <input type="checkbox" id="force-compress" />
+                                <span class="switch-slider"></span>
+                            </div>
+                        </label>
+
+                        <label class="switch-row">
+                            <span class="switch-label">
+                                <span class="text-sm text-foreground">LZMA 压缩</span>
+                                <span class="tooltip">
+                                    <span class="tooltip-trigger">?</span>
+                                    <span class="tooltip-content">压缩率更高但速度稍慢</span>
+                                </span>
+                            </span>
+                            <div class="switch">
+                                <input type="checkbox" id="lzma" />
+                                <span class="switch-slider"></span>
+                            </div>
+                        </label>
+
+                        <div class="border-t border-border/50 my-2"></div>
+
+                        <label class="switch-row">
+                            <span class="switch-label">
+                                <span class="text-sm text-foreground">启动时检查更新</span>
+                                <span class="tooltip">
+                                    <span class="tooltip-trigger">?</span>
+                                    <span class="tooltip-content">程序启动时自动检查新版本</span>
+                                </span>
+                            </span>
+                            <div class="switch">
+                                <input type="checkbox" id="auto-check-update" checked />
+                                <span class="switch-slider"></span>
+                            </div>
+                        </label>
+
+                        <div class="border-t border-border/50 my-2"></div>
+
+                        <label class="switch-row">
+                            <span class="switch-label">
+                                <span class="text-sm text-foreground">UPX 路径</span>
+                                <span class="tooltip">
+                                    <span class="tooltip-trigger">?</span>
+                                    <span class="tooltip-content">选择 UPX 工具的可执行文件路径</span>
+                                </span>
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <input
+                                    type="text"
+                                    id="upx-path-input"
+                                    class="flex-1 bg-muted border border-border rounded px-3 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    placeholder="请选择 UPX 路径"
+                                    readonly
+                                />
+                                <button
+                                    id="browse-upx-btn"
+                                    class="btn btn-primary text-sm px-3 py-1.5"
+                                >
+                                    浏览
+                                </button>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex mt-6">
+                    <button
+                        id="close-settings"
+                        class="btn btn-primary w-full py-2.5 px-6 text-sm rounded-sm"
+                    >
+                        保存设置
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 更新弹窗 -->
+        <div
+            id="update-modal"
+            class="hidden fixed inset-0 bg-foreground/80 flex items-center justify-center z-50 backdrop-blur-sm modal-backdrop"
+        >
+            <div class="card p-6 w-full mx-4 modal-content" style="max-width: 480px">
+                <div class="flex items-center gap-3 mb-5">
+                    <div
+                        class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center"
+                    >
+                        <svg
+                            class="w-5 h-5 text-green-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                            />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-foreground">发现新版本</h2>
+                        <p class="text-sm text-muted-foreground">
+                            <span id="update-version"></span>
+                            <span class="mx-2">|</span>
+                            <span id="update-date"></span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <div class="text-xs font-medium text-foreground/70 mb-2">更新日志</div>
+                    <div class="bg-muted rounded-md p-3 max-h-28 overflow-y-auto">
+                        <div
+                            id="update-notes"
+                            class="text-xs text-muted-foreground space-y-1"
+                        ></div>
+                    </div>
+                </div>
+
+                <!-- 下载选项 -->
+                <div id="download-options" class="grid grid-cols-2 gap-3">
+                    <!-- 动态填充下载选项 -->
+                </div>
+
+                <div id="update-progress" class="hidden mt-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs text-muted-foreground">正在下载...</span>
+                        <span id="update-progress-text" class="text-xs font-medium text-foreground">
+                            0%
+                        </span>
+                    </div>
+                    <div class="h-2 bg-border rounded-full overflow-hidden">
+                        <div
+                            id="update-progress-bar"
+                            class="progress-bar-animated h-full bg-primary rounded-full"
+                            style="width: 0%"
+                        ></div>
+                    </div>
+                </div>
+
+                <div class="flex mt-6">
+                    <button
+                        id="update-later-btn"
+                        class="btn btn-outline w-full py-2.5 px-6 text-sm rounded-sm"
+                    >
+                        稍后更新
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script type="module" src="js/main.js"></script>
+    </body>
+</html>

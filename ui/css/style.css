@@ -1,0 +1,640 @@
+/* 字体定义 */
+@font-face {
+    font-family: 'YASLant';
+    src: url('../font/YASLant.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* shadcn/ui CSS 变量 - New York 风格 + neutral 基色 */
+:root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --radius: 8px;
+    --radius-btn: 4px;
+}
+
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border-color: hsl(var(--border));
+}
+
+/* 移除默认焦点样式，使用自定义样式 */
+*:focus {
+    outline: none;
+}
+
+*:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+}
+
+/* 按钮移除焦点边框 */
+button:focus,
+button:focus-visible {
+    outline: none;
+}
+
+body {
+    font-family:
+        'YASLant',
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        'Roboto',
+        'Oxygen',
+        'Ubuntu',
+        'Cantarell',
+        'Fira Sans',
+        'Droid Sans',
+        'Helvetica Neue',
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* 呼吸灯效果 */
+@keyframes breathing {
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(0.9);
+    }
+}
+
+.breathing-light {
+    animation: breathing 2s ease-in-out infinite;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.3);
+}
+
+/* 日志输出区域 */
+#log-output {
+    font-family: 'YASLant', 'Consolas', 'Monaco', 'Courier New', monospace;
+    overflow: auto;
+}
+
+/* 日志输出区域滚动条 */
+#log-output::-webkit-scrollbar {
+    width: 4px;
+}
+
+#log-output::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#log-output::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.2);
+    border-radius: 2px;
+}
+
+#log-output::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.4);
+}
+
+/* 日志行样式 */
+.log-line {
+    margin-bottom: 4px;
+    line-height: 1.6;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+.log-info {
+    color: hsl(var(--muted-foreground));
+}
+
+.log-error {
+    color: hsl(var(--destructive));
+}
+
+.log-warning {
+    color: #f59e0b;
+}
+
+.log-success {
+    color: hsl(var(--primary));
+    font-weight: 500;
+}
+
+.log-hint {
+    color: hsl(var(--muted-foreground));
+    padding-left: 16px;
+}
+
+/* shadcn/ui 按钮基础样式 */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+.btn:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+}
+
+.btn:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+/* 按钮变体 */
+.btn-primary {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+}
+
+.btn-primary:hover {
+    background-color: hsl(var(--primary) / 0.9);
+}
+
+.btn-secondary {
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+}
+
+.btn-secondary:hover {
+    background-color: hsl(var(--secondary) / 0.8);
+}
+
+.btn-outline {
+    border: 1px solid hsl(var(--input));
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+}
+
+.btn-outline:hover {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+}
+
+.btn-ghost {
+    background-color: transparent;
+    color: hsl(var(--foreground));
+}
+
+.btn-ghost:hover {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+}
+
+/* 清空按钮 hover 特效 */
+#clear-log-btn:hover {
+    color: hsl(var(--destructive));
+    background-color: hsl(var(--destructive) / 0.1);
+}
+
+/* 卡片样式 */
+.card {
+    background-color: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+}
+
+/* 输入框聚焦效果 */
+input:focus,
+select:focus {
+    outline: none;
+}
+
+/* 自定义复选框 */
+input[type='checkbox'] {
+    cursor: pointer;
+    outline: none;
+    accent-color: hsl(var(--primary));
+}
+
+input[type='checkbox']:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
+
+/* Switch 行样式 */
+.switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.15s ease;
+}
+
+.switch-row:hover {
+    background-color: hsl(var(--accent));
+}
+
+.switch-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* 帮助图标样式 */
+.help-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    font-size: 10px;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+    background-color: hsl(var(--muted));
+    border-radius: 50%;
+    cursor: help;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.help-icon:hover {
+    color: hsl(var(--foreground));
+    background-color: hsl(var(--border));
+}
+
+/* Tooltip 组件 - shadcn/ui 风格 */
+.tooltip {
+    position: relative;
+    display: inline-flex;
+}
+
+.tooltip-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    font-size: 10px;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+    background-color: hsl(var(--muted));
+    border-radius: 50%;
+    cursor: help;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.tooltip-trigger:hover {
+    color: hsl(var(--foreground));
+    background-color: hsl(var(--border));
+}
+
+.tooltip-content {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%);
+    padding: 6px 10px;
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+    white-space: nowrap;
+    border-radius: 6px;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.15s ease;
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* Tooltip 箭头 */
+.tooltip-content::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: hsl(var(--primary));
+}
+
+/* Hover 显示 */
+.tooltip:hover .tooltip-content {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 长文本自动换行 */
+.tooltip-content.tooltip-wrap {
+    white-space: normal;
+    width: max-content;
+    max-width: 200px;
+    text-align: center;
+}
+
+/* Switch 开关样式 */
+.switch {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: hsl(var(--border));
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+.switch-slider::before {
+    position: absolute;
+    content: '';
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.switch input:checked + .switch-slider {
+    background-color: hsl(var(--primary));
+}
+
+.switch input:checked + .switch-slider::before {
+    transform: translateX(16px);
+}
+
+.switch input:focus + .switch-slider {
+    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
+
+/* 滑动条样式 */
+input[type='range'].slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: #e5e5e5;
+    border-radius: 9999px;
+    outline: none;
+    transition: opacity 0.2s;
+    font-family: inherit;
+}
+
+input[type='range'].slider:hover {
+    opacity: 0.9;
+}
+
+/* 滑块轨道填充样式 - Webkit */
+input[type='range'].slider::-webkit-slider-runnable-track {
+    height: 6px;
+    background: #e5e5e5;
+    border-radius: 9999px;
+}
+
+/* 滑块样式 - Webkit浏览器 */
+input[type='range'].slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #ffffff;
+    border: 2px solid #171717;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.15s;
+    margin-top: -5px;
+}
+
+input[type='range'].slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+input[type='range'].slider::-webkit-slider-thumb:active {
+    transform: scale(1.05);
+    background: #f5f5f5;
+}
+
+/* 滑块轨道填充样式 - Firefox */
+input[type='range'].slider::-moz-range-track {
+    height: 6px;
+    background: #e5e5e5;
+    border-radius: 9999px;
+}
+
+/* 滑块样式 - Firefox */
+input[type='range'].slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #ffffff;
+    border: 2px solid #171717;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.15s;
+}
+
+input[type='range'].slider::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+input[type='range'].slider::-moz-range-thumb:active {
+    transform: scale(1.05);
+    background: #f5f5f5;
+}
+
+/* 加载动画 */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* 渐入动画 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* 进度条 */
+.progress-bar {
+    transition: width 0.3s ease;
+}
+
+/* 进度条动画 */
+.progress-bar-animated {
+    transition: width 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar-animated::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* 文件拖放区域 */
+.drop-zone {
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.drop-zone.drag-over {
+    transform: scale(1.02);
+    border-color: hsl(var(--primary)) !important;
+    background-color: hsl(var(--accent)) !important;
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.2);
+}
+
+.drop-zone.drag-over .drop-icon {
+    color: hsl(var(--primary));
+    animation: bounce 0.5s ease infinite;
+}
+
+@keyframes bounce {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+/* 弹窗动画 - 遮罩淡入 */
+.modal-backdrop {
+    opacity: 0;
+    transition: opacity 0.15s ease-out;
+}
+
+.modal-backdrop.show {
+    opacity: 1;
+}
+
+/* 弹窗内容动画 - 缩放+平移 */
+.modal-content {
+    opacity: 0;
+    transform: scale(0.95) translateY(4px);
+    transition:
+        opacity 0.15s ease-out,
+        transform 0.15s ease-out;
+}
+
+.modal-backdrop.show .modal-content {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+/* 禁用选择 */
+.select-none {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}

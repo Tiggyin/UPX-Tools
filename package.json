@@ -1,0 +1,29 @@
+{
+    "name": "UPX-Tools",
+    "version": "1.5.0",
+    "type": "module",
+    "description": "UPX 可视化加壳/脱壳工具",
+    "scripts": {
+        "lint": "eslint \"ui/**/*.{js,html}\" --max-warnings 0",
+        "lint:fix": "eslint \"ui/**/*.{js,html}\" --fix",
+        "format": "prettier --write \"ui/**/*.{js,html,css}\"",
+        "format:check": "prettier --check \"ui/**/*.{js,html,css}\"",
+        "check": "npm run lint && npm run format:check",
+        "build:css": "npx tailwindcss -i ./ui/css/main.css -o ./ui/css/tailwind.css --minify",
+        "watch:css": "npx tailwindcss -i ./ui/css/main.css -o ./ui/css/tailwind.css --watch",
+        "build": "cargo tauri build && npm run post-build",
+        "post-build": "powershell -Command \"New-Item -Path 'src-tauri/target/release/bundle/Portable' -ItemType Directory -Force; Copy-Item 'src-tauri/target/release/UPX-Tools.exe' 'src-tauri/target/release/bundle/Portable/'\""
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.39.2",
+        "autoprefixer": "^10.4.23",
+        "eslint": "^9.39.2",
+        "eslint-plugin-html": "^8.1.1",
+        "globals": "^17.2.0",
+        "postcss": "^8.5.6",
+        "postcss-cli": "^11.0.1",
+        "prettier": "^3.3.3",
+        "tailwindcss": "^3.4.19"
+    },
+    "private": true
+}
