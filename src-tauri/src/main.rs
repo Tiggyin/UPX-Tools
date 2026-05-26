@@ -4,10 +4,10 @@
 use encoding_rs::GBK;
 use serde::{Deserialize, Serialize};
 use std::fs;
+use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::io::Read;
 use std::sync::OnceLock;
 
 #[cfg(target_os = "windows")]
@@ -407,7 +407,8 @@ fn check_path_type(path: String) -> Result<PathInfo, String> {
     if path_obj.is_dir() {
         Ok(PathInfo {
             path: path.clone(),
-            name: path_obj.file_name()
+            name: path_obj
+                .file_name()
                 .and_then(|n| n.to_str())
                 .unwrap_or("Unknown")
                 .to_string(),
@@ -435,7 +436,8 @@ fn check_path_type(path: String) -> Result<PathInfo, String> {
 
                 Ok(PathInfo {
                     path: path.clone(),
-                    name: path_obj.file_name()
+                    name: path_obj
+                        .file_name()
                         .and_then(|n| n.to_str())
                         .unwrap_or("Unknown")
                         .to_string(),
@@ -448,7 +450,8 @@ fn check_path_type(path: String) -> Result<PathInfo, String> {
             } else {
                 Ok(PathInfo {
                     path: path.clone(),
-                    name: path_obj.file_name()
+                    name: path_obj
+                        .file_name()
                         .and_then(|n| n.to_str())
                         .unwrap_or("Unknown")
                         .to_string(),
@@ -462,7 +465,8 @@ fn check_path_type(path: String) -> Result<PathInfo, String> {
         } else {
             Ok(PathInfo {
                 path: path.clone(),
-                name: path_obj.file_name()
+                name: path_obj
+                    .file_name()
                     .and_then(|n| n.to_str())
                     .unwrap_or("Unknown")
                     .to_string(),
