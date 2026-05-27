@@ -8,17 +8,19 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  # 强制使用 Node.js 24 以避免弃用警告 (2026-06-02 起)
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
-    if: >
+    if: >-
       contains(github.event.head_commit.message, 'build:') ||
       github.event_name == 'pull_request'
     strategy:
       fail-fast: false
       matrix:
         platform:
-          - os: windows-latest
+          - os: windows-2022
             target: x86_64-pc-windows-msvc
             name: Windows x64
 
@@ -27,12 +29,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        # 注意：actions/checkout@v4 使用 Node.js 20
+        # 已设置 FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 强制使用 Node.js 24
+        # 待 actions/checkout@v5 发布后升级
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.platform.target }}
-
 
       - name: Rust cache
         uses: Swatinem/rust-cache@v2
@@ -46,14 +50,15 @@ jobs:
         working-directory: ./src-tauri
         run: cargo tauri build --verbose
 
-
       - name: Upload artifacts (Windows)
-        if: matrix.platform.os == 'windows-latest'
+        if: matrix.platform.os == 'windows-2022'
         uses: actions/upload-artifact@v4
+        # 注意：actions/upload-artifact@v4 使用 Node.js 20
+        # 已设置 FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 强制使用 Node.js 24
+        # 待 actions/upload-artifact@v5 发布后升级
         with:
           name: UPX-Tools-${{ matrix.platform.name }}
           path: |
             src-tauri/target/release/bundle/msi/*.msi
             src-tauri/target/release/bundle/nsis/*.exe
           if-no-files-found: warn
-
