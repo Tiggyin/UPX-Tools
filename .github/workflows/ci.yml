@@ -11,11 +11,14 @@ on:
 env:
   CARGO_TERM_COLOR: always
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # 强制使用 Node.js 24 以避免弃用警告 (2026-06-02 起)
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   test:
-    runs-on: windows-latest
-    if: >
+    # 更新为具体版本以避免重定向警告（2026-06-15 起 windows-latest 将重定向到 windows-2025-vs2022）
+    runs-on: windows-2022
+    if: >-
       contains(github.event.head_commit.message, 'build:') ||
       contains(github.event.head_commit.message, 'tag') ||
       startsWith(github.ref, 'refs/tags/') ||
@@ -24,6 +27,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        # 注意：actions/checkout@v4 使用 Node.js 20
+        # 已设置 FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 强制使用 Node.js 24
+        # 待 actions/checkout@v5 发布后升级
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
