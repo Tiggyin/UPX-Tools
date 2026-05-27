@@ -1,4 +1,3 @@
-cat > src-tauri/src/main.rs << 'EOF'
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
@@ -6,7 +5,6 @@ use encoding_rs::GBK;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::Read;
-use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::OnceLock;
@@ -18,6 +16,7 @@ use std::os::windows::process::CommandExt;
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 // UPX 路径缓存（如果需要的话）
+#[allow(dead_code)]
 static USER_UPX_PATH: OnceLock<Option<PathBuf>> = OnceLock::new();
 
 // ============================================================================
@@ -482,7 +481,7 @@ fn check_path_type(path: String) -> Result<PathInfo, String> {
 }
 
 // 检查文件是否已加壳
-fn check_if_packed(file_path: &Path, original_size: &u64) -> bool {
+fn check_if_packed(file_path: &Path, _original_size: &u64) -> bool {
     // 简单的检查：比较文件头
     if let Ok(mut file) = fs::File::open(file_path) {
         let mut buffer = [0u8; 512];
@@ -859,4 +858,3 @@ fn main() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-EOF
