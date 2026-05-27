@@ -11,6 +11,8 @@ permissions:
 env:
   CARGO_TERM_COLOR: always
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # 强制使用 Node.js 24 以避免弃用警告 (2026-06-02 起)
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   release:
@@ -18,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - os: windows-latest
+          - os: windows-2022
             target: x86_64-pc-windows-msvc
             name: Windows-x64
 
@@ -27,12 +29,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        # 注意：actions/checkout@v4 使用 Node.js 20
+        # 已设置 FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 强制使用 Node.js 24
+        # 待 actions/checkout@v5 发布后升级
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.platform.target }}
-
 
       - name: Rust cache
         uses: Swatinem/rust-cache@v2
@@ -63,14 +67,13 @@ jobs:
             Get-ChildItem -Path "src-tauri/target/release/" -Recurse -Filter "*.exe" | ForEach-Object { Write-Host $_.FullName }
           }
 
-
       - name: Get version from tag
         id: get_version
         shell: bash
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
       - name: Prepare release files (Windows)
-        if: matrix.platform.os == 'windows-latest'
+        if: matrix.platform.os == 'windows-2022'
         shell: pwsh
         run: |
           New-Item -Path "release" -ItemType Directory -Force
@@ -114,9 +117,11 @@ jobs:
           Write-Host "=== Release files ==="
           Get-ChildItem -Path "release/" | ForEach-Object { Write-Host "  - $($_.Name) ($($_.Length) bytes)" }
 
-
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
+        # 注意：softprops/action-gh-release@v2 使用 Node.js 20
+        # 已设置 FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 强制使用 Node.js 24
+        # 待新版本发布后升级
         with:
           files: release/*
           draft: false
